@@ -116,7 +116,7 @@ for(i in 0:10){
 phi <- function(t){
   return((1+t)^10/2^10)
 }
-get_dist_s <- function(x_max, epsilon, phi, theta){
+get_dist_s <- function(x_max, epsilon, phi, theta){ # x_max = l
   t_max <- (1/0.9*2^10)^0.1-1 # the max value for t such that phi(t)<1/theta
   t_seq <- seq(1, t_max, by=(t_max-1)/100)
   t_seq <- t_seq[-1] # remove t=1
@@ -152,7 +152,7 @@ get_dist_s <- function(x_max, epsilon, phi, theta){
     }
     ps <- c(ps, round(Re(ps_temp/M), 6))
   }
-  return(ps) #jth element of ps is p(S=j-1)
+  return(list(ps, M)) #jth element of ps is p(S=j-1)
 }
 ```
 
@@ -161,10 +161,14 @@ t_max <- (1/0.9*2^10)^0.1-1 # the max value for t such that phi(t)<1/theta
 t_seq <- seq(1, t_max, by=(t_max-1)/100)
 t_seq <- t_seq[-1] # remove t=1
 t_seq <- t_seq[-length(t_seq)] # remove t_max
+x_max <- 10
 epsilon <- 10^-5
 theta <- 0.9
 plot(t_seq, (log(1-theta)-log(1-theta*phi(t_seq))-log(epsilon))/log(t_seq),
-     ylab='function to minimize')
+     ylab='function to minimize', type='h')
+M <- get_dist_s(x_max, epsilon, phi, theta)[[2]]
+abline(h=M, col='red')
+text(x=1.02, y=5*M, label=sprintf('M is %d', M))
 ```
 
 
