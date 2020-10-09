@@ -131,7 +131,7 @@ get_dist_s <- function(x_max, epsilon, phi, theta){ # x_max = l
   p_dft <- numeric(0) # dft of all the p
   for(j in 0:(M-1)){
     p_temp <- 0
-    for(x in 0:(x_max-1)){
+    for(x in 0:x_max){
         p_temp <- p_temp + exp(-2*pi*complex(real=0, imaginary=1)*j/M*x)*p[x+1]
     }
     p_dft <- c(p_dft, p_temp)
