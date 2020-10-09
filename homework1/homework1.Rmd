@@ -77,12 +77,14 @@ design <- matrix(scan("design.txt"),ncol=256,byrow=T)
 colours <- grey(seq(0,1,length=256))
 image(design, axes=F, col=colours)
 xhat <- fwht2d(design)
-xhat_soft <- soft_th(xhat, 100)
-xhat_hard <- hard_th(xhat, 200)
-x_soft <- fwht2d(xhat_soft)/ncol(xhat_soft)^2
-x_hard <- fwht2d(xhat_hard)/ncol(xhat_hard)^2
-image(x_soft, axes=F, col=colours)
-image(x_hard, axes=F, col=colours)
+for(i in c(50, 100, 200)){
+  xhat_soft <- soft_th(xhat, i)
+  xhat_hard <- hard_th(xhat, i)
+  x_soft <- fwht2d(xhat_soft)/ncol(xhat_soft)^2
+  x_hard <- fwht2d(xhat_hard)/ncol(xhat_hard)^2
+  image(x_soft, axes=F, col=colours, main=sprintf('soft thresholding: lambda = %d', i))
+  image(x_hard, axes=F, col=colours, main=sprintf('hard thresholding: lambda = %d', i))
+}
 ```
 
 ## Question 2
