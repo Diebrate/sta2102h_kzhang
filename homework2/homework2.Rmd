@@ -35,6 +35,17 @@ Now we accept $X=b+\frac{Y}{b}$ if $U\leq\frac{f(X)}{Mg(X)}=\exp{\frac{-Y^2}{2b^
 \implies P_{accept}=\frac{1}{M}=\frac{b\sqrt{2\pi}(1-\Phi(b))}{e^{\frac{-b^2}{2}}}
 \end{gather*}
 
+To evaluate the limit,
+
+\begin{gather*}
+\lim_{b\to\infty}P_{accept}=\lim_{b\to\infty}\frac{b\sqrt{2\pi}(1-\Phi(b))}{e^{\frac{-b^2}{2}}}\\
+\overset{H}{=}\lim_{b\to\infty}\frac{\sqrt{2\pi}(1-\Phi(b))-b\sqrt{x\pi}\phi(b)}{-be^{-\frac{b^2}{2}}}\\
+=\lim_{b\to\infty}\frac{\frac{\sqrt{2\pi}(1-\Phi(b))}{b}-\sqrt{x\pi}\phi(b)}{-e^{-\frac{b^2}{2}}}\\
+\overset{H}{=}\lim_{b\to\infty}\frac{\frac{-\sqrt{2\pi}}{b}(1-\Phi(b))-\frac{\sqrt{2\pi}\phi(b)}{b}-\sqrt{2\pi}\phi'(b)}{-be^{\frac{2b^2}{2}}}=0
+\end{gather*}
+
+Note that $\phi(b)$ is the density at $b$.
+
 ## c)
 
 \begin{gather*}
