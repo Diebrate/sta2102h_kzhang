@@ -69,14 +69,14 @@ Suppose there exists a unique minimizer for $f_\lambda(x)=\sum_{i=1}^n(y_i-\thet
 ## b)
 
 \[Y^*=\begin{pmatrix}y_1\\y_2\\ \vdots\\y_n\\0\\0\\ \vdots\\0\end{pmatrix}\qquad
-X=\begin{pmatrix}1&0&\cdots&0&0&\cdots&\cdots&\cdots&\cdots&\cdots&0\\
-0&1&\cdots&0&0&\cdots&\cdots&\cdots&\cdots&\cdots&0\\
-\vdots&&\ddots&\vdots&\vdots\\
-0&\cdots&\cdots&1&0&\cdots&\cdots&\cdots&\cdots&\cdots&0\\
-0&\cdots&\cdots&0&\sqrt{\lambda}&-2\sqrt{\lambda}&\sqrt{\lambda}&0&\cdots&\cdots&0\\
-0&\cdots&\cdots&0&0&\sqrt{\lambda}&-2\sqrt{\lambda}&\sqrt{\lambda}&0&\cdots&0\\
-\vdots&&&&&&&&\ddots&&\vdots\\
-0&\cdots&\cdots&0&0&\cdots&\cdots&\cdots&\sqrt{\lambda}&-2\sqrt{\lambda}&\sqrt{\lambda}\end{pmatrix}\]
+X=\begin{pmatrix}1&0&\cdots&\cdots&\cdots&0\\
+0&1&0&\cdots&\cdots&0\\
+\vdots&&\ddots&&&\vdots\\
+0&&\cdots&&0&1\\
+\sqrt{\lambda}&-2\sqrt{\lambda}&\sqrt{\lambda}&0&\cdots&0\\
+0&\sqrt{\lambda}&-2\sqrt{\lambda}&\sqrt{\lambda}&\cdots&0\\
+&&&\ddots&&\\
+0&&\cdots&\sqrt{\lambda}&-2\sqrt{\lambda}&\sqrt{\lambda}\end{pmatrix}\]
 
 ## c)
 
