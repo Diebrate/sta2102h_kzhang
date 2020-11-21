@@ -1,0 +1,161 @@
+---
+title: "STA2102 Homework 3"
+author: "Kevin Zhang"
+date: "11/21/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Question 1
+
+## a)
+
+$$E((V^\intercal AV)^2)=\sum_{i=1}a_{ii}^2 E(V_i^4)=\sum_{i=1}^n\sum_{j=1}^n a_{ii}a_{jj}E(V_i^2)E(V_j^2)=\sum_{i=1}^n\sum_{j=1}^n a_{ii}a_{jj}$$
+
+Therefore we need to minimize $E(V_i^4)$. Note that $E(V_i^4)=var(V_i^2)+(E(V_i^2))^2=var(V_i^2)+1$ is minimized if $var(V_i^2)=0$ or equivalently $V_i^2$ is degenerate at some number $k$. Since $E(V_i^2)=1$, we have $V_i^2=1$ a.s. which implies that $V_i\in\{-1, 1\}$ and $P(-1)=P(1)=0.5$.
+
+## b)
+
+By simple matrix-vector multiplication:
+$$\begin{pmatrix}H_{11}&H_{12}\\H_{21}&H_{22}\end{pmatrix}\begin{pmatrix}V\\0\end{pmatrix}=\begin{pmatrix}H_{11}V\\H_{21}V\end{pmatrix}$$
+
+$$\begin{pmatrix}H_{11}&H_{12}\\H_{21}&H_{22}\end{pmatrix}\begin{pmatrix}H_{11}^{k-1}V\\0\end{pmatrix}=\begin{pmatrix}H_{11}H_{11}^{k-1}V\\H_{21}H_{11}^{k-1}V\end{pmatrix}=\begin{pmatrix}H_{11}^k V\\H_{21}H_{11}^{k-1}V\end{pmatrix}$$
+
+## c)
+
+```{r}
+leverage <- function(x,w,r=10,m=100){
+  set.seed(12345) # modification
+  qrx <- qr(x)
+  n <- nrow(x)
+  lev <- NULL
+  for(i in 1:m){
+    v <- ifelse(runif(n)>0.5,1,-1)
+    v[-w] <- 0
+    v0 <- qr.fitted(qrx,v)
+    f <- v0
+    for(j in 2:r){
+      v0[-w] <- 0
+      v0 <- qr.fitted(qrx,v0)
+      f <- f + v0/j
+    }
+    lev <- c(lev,sum(v*f))
+  }
+  std.err <- exp(-mean(lev))*sd(lev)/sqrt(m)
+  lev <- 1 - exp(-mean(lev))
+  r <- list(lev=lev,std.err=std.err)
+  r
+}
+x <- c(1:1000)/1000
+X1 <- 1
+for (k in 1:5) X1 <- cbind(X1,cos(2*k*pi*x),sin(2*k*pi*x))
+library(splines) # loads the library of functions to compute B-splines
+X2 <- cbind(1,bs(x,df=10))
+plot(x,X2[,2])
+for (i in 3:11) points(x,X2[,i])
+lev1 <- NULL
+err1 <- NULL
+lev2 <- NULL
+err2 <- NULL
+for(k in 1:20){
+  w <- (1:1000)[x>(k-1)/20 & x<=k/20]
+  r1 <- leverage(X1, w)
+  r2 <- leverage(X2, w)
+  lev1 <- c(lev1, r1$lev)
+  err1 <- c(err1, r1$std.err)
+  lev2 <- c(lev2, r2$lev)
+  err2 <- c(err2, r2$std.err)
+}
+data.frame(k=1:20, lev1=lev1, err1=err1, lev2=lev2, err2=err2)
+```
+
+The estimates for the two models are not exactly close to each other. The standard error for model 2 seems to be smaller.
+
+# Question 2
+
+## a)
+
+Let $x_m$ denote the median then
+\begin{gather*}
+  \int_{-\infty}^{x_m} \frac{1}{\pi\sigma}\left(\frac{\sigma^2}{(x-\theta)^2+\sigma^2)}\right)\,dx=\int_{-\infty}^{x_m-\theta} \frac{\sigma}{\pi}\left(\frac{1}{s^2+\sigma^2)}\right)\,ds=\left.\frac{1}{\pi}arctan\frac{s}{\sigma}\right|_{-\infty}^{x_m-\theta}=0.5\\
+  \implies\frac{1}{\pi}arctan\frac{x_m-\theta}{\sigma}+0.5=0.5\implies x_m=\theta
+\end{gather*}
+Similarly, let $x_q$ denote the third quartile, then
+$$\left.\frac{1}{\pi}arctan\frac{s}{\sigma}\right|_0^{x_r-\theta}=\frac{1}{4}\implies arctan\frac{x_r-\theta}{\sigma}=\frac{\pi}{4}\implies x_r=\theta+\sigma$$
+By symmetry around $\theta$, the IQR is $2\sigma$.
+
+## b)
+
+$$l(x,\theta,\sigma)=n\log\sigma-n\log\pi-\sum_{i=1}^n\log[(x_i-\theta)^2+\sigma^2]$$
+$$\frac{\partial l}{\partial\theta}=\sum_{i=1}^n\frac{2(x_i-\theta)}{(x_i-\theta)^2+\sigma^2}$$
+$$\frac{\partial l}{\partial\sigma}=\frac{n}{\sigma}-\sum_{i=1}^n\frac{2\sigma}{(x_i-\theta)^2+\sigma^2)}$$
+$$\frac{\partial^2l}{\partial\theta^2}=\sum_{i=1}^n\frac{-2((x_i-\theta)^2+\sigma^2)-2(x_i-\theta)^2}{((x_i-\theta)^2+\sigma^2)^2}$$
+$$\frac{\partial^2 l}{\partial\sigma^2}=\frac{-n}{\sigma^2}-\sum_{i=1}^n\frac{2((x_i-\theta)^2+\sigma^2)-4\sigma^2}{((x_i-\theta)^2+\sigma^2)^2}$$
+$$\frac{\partial^2l}{\partial\theta\partial\sigma}=\sum_{i=1}^n\frac{4\sigma(x_i-\theta)}{-((x_i-\theta)^2+\sigma^2)^2}$$
+
+```{r}
+library(expm) # required to compute square root of a matrix
+newton_raph <- function(x, n_iter=1000){
+  theta <- median(x)
+  sigma <- IQR(x) / 2
+  res <- c(theta, sigma)
+  h1 <- function(x, theta, sigma){
+    temp1 <- 0
+    for(x_temp in x){
+      temp1 <- temp1 + 2*(x_temp-theta)/((x_temp-theta)^2+sigma^2)
+    }
+    temp2 <- length(x)/sigma
+    for(x_temp in x){
+      temp2 <- temp2 - 2*sigma/((x_temp-theta)^2+sigma^2)
+    }
+    return(c(temp1, temp2))
+  }
+  h2 <- function(x, theta, sigma){
+    temp11 <- 0
+    for(x_temp in x){
+      temp11 <- temp11 - (4*(x_temp-theta)^2+2*sigma^2)/((x_temp-theta)^2+sigma^2)^2
+    }
+    temp22 <- -length(x)/sigma^2
+    for(x_temp in x){
+      temp22 <- temp22 - (2*(x_temp-theta)^2-2*sigma^2)/((x_temp-theta)^2+sigma^2)^2
+    }
+    temp12 <- 0
+    for(x_temp in x){
+      temp12 <- temp12 - 4*sigma*(x_temp-theta)/((x_temp-theta)^2+sigma^2)^2
+    }
+    return(matrix(c(temp11, temp12, temp12, temp22), nrow=2))
+  }
+  for(i in 1:n_iter){
+    h1_temp <- h1(x, res[1], res[2])
+    h2_temp <- h2(x, res[1], res[2])
+    res <- res - solve(h2_temp) %*% h1_temp
+  }
+  return(list(res=res, err=solve(sqrtm(h2(x, res[1], res[2])))))
+}
+x <- rcauchy(n=1000, location=0,scale=1)
+newton_raph(x)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,126 @@
+---
+title: "STA2102 Midterm"
+author: "Kevin Zhang 1002225264"
+date: "10/28/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Question 1
+
+```{r}
+x <- scan("EV.txt", what=list(0,0))
+a <- x[[1]]
+theta <- x[[2]]
+l <- max(a)
+n <- length(a)
+t <- numeric(0)
+p <- numeric(n*l + 1)
+phi_value <- numeric(n*l + 1)
+# compute phi(t0) to phi(t_nl)
+for(j in 0:(n*l)){
+  phi_value_temp <- 1
+  for(i in 1:n){
+    temp <- 1-theta[i]+theta[i]*exp(-2*pi*complex(imaginary=1)*j*a[i]/(n*l+1))
+    phi_value_temp <- phi_value_temp * temp
+  }
+  phi_value[j+1] <- phi_value_temp
+}
+# compute p(s=o) to p(s=nl)
+for(s in 0:(n*l)){
+  p_temp <- numeric(n*l + 1)
+  for(j in 0:(n*l)){
+    p_temp[j+1] <- phi_value[j+1]*exp(2*pi*complex(imaginary=1)*j*s/(n*l+1))
+  }
+  p[s+1] <- round(Re(sum(p_temp)/(n*l+1)), 5)
+}
+p1 <- sum(p[(270+1):(300+1)])
+p2 <- p[269+1]
+print(sprintf('The answer to part a is %f', p1))
+print(sprintf('The answer to part b is %f', p2))
+```
+
+# Question 2
+
+## a)
+
+Case 1: $y<0$
+
+\begin{gather*}
+  P(U_1-U_2\leq y)=\int_{-y}^1\int_0^{U_2+y}dU_1dU_2=\frac{1}{2}(1-y^2)+y(1-y)\\
+  \implies\frac{\partial P(Y\leq y)}{y}=-y+1+2y=1+y=1-|y|
+\end{gather*}
+
+Case 2: $y\geq0$
+
+\begin{gather*}
+  P(U_1-U_2\leq y)=\int_0^{1-y}\int_0^{U_2+y}dU_1dU_2+\int_{1-y}^1dU_2=\frac{1}{2}(1-y)^2+y(1-y)+y\\
+  \implies\frac{\partial P(Y\leq y)}{y}=y-1+1-2y+1=1-y=1-|y|
+\end{gather*}
+
+Therefore, $g(y)=1-|y|$ for $y\in[-1,1]$.
+
+## b)
+
+The problem is to find $M$ equal to the max of $\frac{f(x)}{g(x)}$ which is symmetric around 0, so we only look at the interval $[0,1]$. At $x=0$, this evaluate to $\frac{3}{4}$. At $x=1$, by L'Hospital's rule, this evaluates to $\lim_{x\to1}\frac{\frac{3x}{2}}{x}=\frac{3}{2}$. At $x\in(0,1)$, we have
+\[\frac{\partial}{\partial x}\left(\frac{f(x)}{g(x)}\right)=\frac{\frac{-3}{2}x(1-x)+\frac{3}{4}(1-x^2)}{(1-x)^2}=0\]
+This implies that $\frac{-3}{2}x(1-x)+\frac{3}{4}(1-x^2)=0\implies x^2-2x+1=0\implies x\in\{-1,1\}$. This contradicts with $x\in(0,1)$. Therefore, the max value is equal to $\frac{3}{2}$ at $x\in\{-1,1\}$. Therefore, the acception probability is $\frac{1}{M}=\frac{2}{3}$.
+
+# Question 3
+
+## a)
+
+First, by iterative method, $x_k=\sum_{i=0}^{k-1}B^i b+B^kx_0$. Notice that $B^2=uv^\intercal uv^\intercal=qB$ where $q=v^\intercal u$. Therefore, $B^kx_0=q^{k-1}x_0\to0$ as $k\to\infty$ since $|q|<1$. Now
+\begin{gather*}
+  (I-B)\sum_{i=0}^{k-1}B^i=\sum_{i=0}^{k-1}B^i-\sum_{i=1}^kB^i=I-B^k\\
+  \implies\sum_{i=0}^{k-1}B^i=(I-B)^{-1}(I-B^k)\\
+  \sum_{i=0}^{k-1}B^i\to(I-B)^{-1}\text{ since }B^k\to0\text{ or }I-B^k\to I
+\end{gather*}
+Therefore, $x_k=\sum_{i=0}^{k-1}B^i b+B^kx_0\to(I-B)^{-1}b=x^*$.
+
+## b)
+
+```{r}
+B <- 0.1 * matrix(c(-1, -1,  1, -2, -3,
+                    -1,  1, -1,  3,  2,
+                    -1,  3,  2,  1, -1,
+                     1,  2,  1, -1, -3,
+                     1, -1,  3, -1,  2), nrow=5, byrow=TRUE)
+eg <- eigen(B)
+eg$values
+max(Mod(eg$values))
+```
+There are 5 different eigenvalues therefore the eigenspace is full rank (rank is 5). Therefore, $||Bx||_2\leq|\lambda_{max}|$. Note that in this case $|\lambda_{max}|\approx0.299<1$. Therefore, $||B||_2<1$ and subsequently $\sum_{i=0}^kB^i\to(I-B)^{-1}$ and $B^k\to0$ which implies that the algorithm converges.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
