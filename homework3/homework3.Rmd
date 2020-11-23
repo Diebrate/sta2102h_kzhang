@@ -1,6 +1,6 @@
 ---
 title: "STA2102 Homework 3"
-author: "Kevin Zhang"
+author: "Kevin Zhang 1002225264"
 date: "11/21/2020"
 output: pdf_document
 ---
@@ -92,7 +92,7 @@ By symmetry around $\theta$, the IQR is $2\sigma$.
 $$l(x,\theta,\sigma)=n\log\sigma-n\log\pi-\sum_{i=1}^n\log[(x_i-\theta)^2+\sigma^2]$$
 $$\frac{\partial l}{\partial\theta}=\sum_{i=1}^n\frac{2(x_i-\theta)}{(x_i-\theta)^2+\sigma^2}$$
 $$\frac{\partial l}{\partial\sigma}=\frac{n}{\sigma}-\sum_{i=1}^n\frac{2\sigma}{(x_i-\theta)^2+\sigma^2)}$$
-$$\frac{\partial^2l}{\partial\theta^2}=\sum_{i=1}^n\frac{-2((x_i-\theta)^2+\sigma^2)-2(x_i-\theta)^2}{((x_i-\theta)^2+\sigma^2)^2}$$
+$$\frac{\partial^2l}{\partial\theta^2}=\sum_{i=1}^n\frac{2(x_i-\theta)^2-2\sigma^2}{((x_i-\theta)^2+\sigma^2)^2}$$
 $$\frac{\partial^2 l}{\partial\sigma^2}=\frac{-n}{\sigma^2}-\sum_{i=1}^n\frac{2((x_i-\theta)^2+\sigma^2)-4\sigma^2}{((x_i-\theta)^2+\sigma^2)^2}$$
 $$\frac{\partial^2l}{\partial\theta\partial\sigma}=\sum_{i=1}^n\frac{4\sigma(x_i-\theta)}{-((x_i-\theta)^2+\sigma^2)^2}$$
 
@@ -116,7 +116,7 @@ newton_raph <- function(x, n_iter=1000){
   h2 <- function(x, theta, sigma){
     temp11 <- 0
     for(x_temp in x){
-      temp11 <- temp11 - (4*(x_temp-theta)^2+2*sigma^2)/((x_temp-theta)^2+sigma^2)^2
+      temp11 <- temp11 + (2*(x_temp-theta)^2-2*sigma^2)/((x_temp-theta)^2+sigma^2)^2
     }
     temp22 <- -length(x)/sigma^2
     for(x_temp in x){
