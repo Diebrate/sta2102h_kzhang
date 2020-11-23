@@ -97,7 +97,6 @@ $$\frac{\partial^2 l}{\partial\sigma^2}=\frac{-n}{\sigma^2}-\sum_{i=1}^n\frac{2(
 $$\frac{\partial^2l}{\partial\theta\partial\sigma}=\sum_{i=1}^n\frac{4\sigma(x_i-\theta)}{-((x_i-\theta)^2+\sigma^2)^2}$$
 
 ```{r}
-library(expm) # required to compute square root of a matrix
 newton_raph <- function(x, n_iter=1000){
   theta <- median(x)
   sigma <- IQR(x) / 2
@@ -133,7 +132,7 @@ newton_raph <- function(x, n_iter=1000){
     h2_temp <- h2(x, res[1], res[2])
     res <- res - solve(h2_temp) %*% h1_temp
   }
-  return(list(res=res, err=solve(sqrtm(h2(x, res[1], res[2])))))
+  return(list(res=res, err=-solve((h2(x, res[1], res[2])))))
 }
 x <- rcauchy(n=1000, location=0,scale=1)
 newton_raph(x)
